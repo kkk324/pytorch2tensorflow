@@ -35,7 +35,7 @@ def detect(save_txt=False, save_img=False):
     elif opt.model_type == 'resnet-xt':
         weights = ''
         cfg    = ''
-    else opt.model_type == 'densenet':
+    elif opt.model_type == 'densenet':
         weights = ''
         cfg    = ''
      
@@ -54,14 +54,16 @@ def detect(save_txt=False, save_img=False):
 
     # Initialize model
     # model = Darknet(opt.cfg, img_size)
-    model = Darknet(cfg, img_size)
+    
+    if opt.model_type == 'yolov3':
+        model = Darknet(cfg, img_size)
 
-    # Load weights
-    attempt_download(weights)
-    if weights.endswith('.pt'):  # pytorch format
-        model.load_state_dict(torch.load(weights, map_location=device)['model'])
-    else:  # darknet format
-        _ = load_darknet_weights(model, weights)
+        # Load weights
+        attempt_download(weights)
+        if weights.endswith('.pt'):  # pytorch format
+            model.load_state_dict(torch.load(weights, map_location=device)['model'])
+        else:  # darknet format
+            _ = load_darknet_weights(model, weights)
 
     # Second-stage classifier
     classify = False
