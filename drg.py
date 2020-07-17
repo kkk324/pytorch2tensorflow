@@ -11,15 +11,17 @@ import cv2
 def detect(save_txt=False, save_img=False):
     # img_size = (320, 192) if ONNX_EXPORT else opt.img_size  # (320, 192) or (416, 256) or (608, 352) for (height, width)
     # img_size = (416, 416)
-
-    img_size = opt.img_size 
+    print('ONNX_EXPORT', ONNX_EXPORT)
+    img_size = (opt.img_size, opt.img_size)
     print(opt.model_type)
     if opt.model_type == 'yolov3':
         weights = 'weights/yolov3.weights'
         cfg     = 'cfg/yolov3.cfg'
     elif opt.model_type == 'vgg':
-        weights = ''
-        cfg    = ''
+        import torch
+        model = torch.hub.load('pytorch/vision:v0.6.0', 'vgg11', pretrained=True)
+        #weights = ''
+        #cfg    = ''
     elif opt.model_type == 'resnet':
         weights = ''
         cfg    = ''
@@ -38,10 +40,11 @@ def detect(save_txt=False, save_img=False):
     elif opt.model_type == 'densenet':
         weights = ''
         cfg    = ''
-     
+    
+    
 
-    print(weights)
-    print(cfg)
+    #print(weights)
+    #rint(cfg)
     #out, source, weights, half, view_img = opt.output, opt.source, opt.weights, opt.half, opt.view_img
     out, source, half, view_img = opt.output, opt.source, opt.half, opt.view_img
     webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
@@ -79,15 +82,25 @@ def detect(save_txt=False, save_img=False):
 
     # Export mode
     if ONNX_EXPORT:
+        import torch
+        model_name = 'weights/' + opt.model_type + '.onnx'
+        print(model_name)
+        print('img_size: ', img_size)
+        print(model)
         img = torch.zeros((1, 3) + img_size)  # (1, 3, 320, 192)
-        torch.onnx.export(model, img, 'weights/export.onnx', verbose=True, opset_version=9)
-
+        # torch.onnx.export(model, img, 'weights/export.onnx', verbose=True, opset_version=9)
+        print('---1---')
+        torch.onnx.export(model, img, model_name, verbose=True, opset_version=11)
         # Validate exported model
         import onnx
-        model = onnx.load('weights/export.onnx')  # Load the ONNX model
+        #model = onnx.load('weights/export.onnx')  # Load the ONNX model
+        model = onnx.load(model_name)  # Load the ONNX model
         onnx.checker.check_model(model)  # Check that the IR is well formed
-        # print(onnx.helper.printable_graph(model.graph))  # Print a human readable representation of the graph
+        print('-----graph-----')
+        #print(onnx.helper.printable_graph(model.graph))  # Print a human readable representation of the graph
         return
+   
+    print('---2---')
 
     # Half precision
     half = half and device.type != 'cpu'  # half precision only supported on CUDA
@@ -104,9 +117,13 @@ def detect(save_txt=False, save_img=False):
         save_img = True
         dataset = LoadImages(source, img_size=img_size, half=half)
 
+    print('---3---')
+    
     # Get classes and colors
     classes = load_classes(parse_data_cfg(opt.data)['names'])
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(classes))]
+
+    print('---4---')
 
     # Run inference
     t0 = time.time()
@@ -121,6 +138,10 @@ def detect(save_txt=False, save_img=False):
 
         if opt.half:
             pred = pred.float()
+
+        print(pred.shape)
+        print(pred[0])
+        exit()
 
         # Apply NMS
         pred = non_max_suppression(pred, opt.conf_thres, opt.nms_thres)
@@ -197,7 +218,7 @@ if __name__ == '__main__':
     #parser.add_argument('--weights', type=str, default='weights/yolov3.weights', help='path to weights file')
     parser.add_argument('--source', type=str, default='data/samples', help='source')  # input file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='output', help='output folder')  # output folder
-    parser.add_argument('--img-size', type=int, default=(416, 416), help='inference size (pixels)')
+    parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.3, help='object confidence threshold')
     parser.add_argument('--nms-thres', type=float, default=0.5, help='iou threshold for non-maximum suppression')
     parser.add_argument('--fourcc', type=str, default='mp4v', help='output video codec (verify ffmpeg support)')

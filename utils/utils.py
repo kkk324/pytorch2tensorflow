@@ -489,6 +489,13 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.5):
         #   multivariate_normal.pdf(x, mean=mat['class_mu'][c, :2], cov=mat['class_cov'][c, :2, :2])
 
         # Multiply conf by class conf to get combined confidence
+        print('type of pred: ', type(pred))
+        print('shape of pred: ', pred.shape)
+        print('pred[:, 5:].max(1): ', pred[:, 5:].max(1))
+        class_conf, class_pred = pred[:, 5:].max(1)
+        pred[:, 4] *= class_conf
+
+        # # Merge classes (optional))
         class_conf, class_pred = pred[:, 5:].max(1)
         pred[:, 4] *= class_conf
 
