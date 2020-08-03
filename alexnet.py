@@ -4,8 +4,8 @@ import torchvision
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 
 img_size = (224, 224)
-dummy_input = torch.zeros((10, 3) + img_size)
-model = torchvision.models.vgg16(pretrained=True).cpu()
+dummy_input = torch.zeros((1, 3) + img_size)
+model = torchvision.models.alexnet(pretrained=True).cpu()
 
 from torchvision import transforms
 transform = transforms.Compose([
@@ -35,9 +35,9 @@ _, index = torch.max(out, 1)
 percentage = torch.nn.functional.softmax(out, dim=1)[0]*100
 print(classes[index[0]], percentage[index[0]].item())
 print('--end---')
-exit()
+#exit()
 
-input_name = ["actual_input_1"] + ["learned_%d" % i for i in range(16) ]
+input_names = ["actual_input_1"] + ["learned_%d" % i for i in range(16) ]
 output_names = ["output1"]
 
 print(input_names)
@@ -58,7 +58,7 @@ import onnxruntime as ort
 import numpy as np
 ort_session = ort.InferenceSession('./weights/alexnet.onnx')
 
-outputs = ort_session.run(None, {"actual_input_1":np.zeros((10,3)+(224,224)).astype(np.float32)})
+outputs = ort_session.run(None, {"actual_input_1":np.zeros((1,3)+(224,224)).astype(np.float32)})
 
 print(outputs[0])
 
