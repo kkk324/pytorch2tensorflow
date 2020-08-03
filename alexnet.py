@@ -3,8 +3,6 @@ import torchvision
 
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 
-
-
 img_size = (224, 224)
 dummy_input = torch.zeros((10, 3) + img_size)
 model = torchvision.models.vgg16(pretrained=True).cpu()

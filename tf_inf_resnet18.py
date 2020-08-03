@@ -9,9 +9,16 @@ with tf.gfile.GFile(graph_def, "rb") as f:
     restored_graph_def = tf.GraphDef()
     restored_graph_def.ParseFromString(f.read())
 
+n = len(restored_graph_def.node)
+print(n)
+k = 0
 for node in restored_graph_def.node:
     #if 'output' in node.name.lower():
-         print(node.name, node.op)
+    if k == n-1:
+        output_node = node.name
+        print(node.name, node.op)
+    k+=1
+
 
 tf.import_graph_def(
     restored_graph_def,
@@ -30,7 +37,7 @@ img = np.zeros((10,3)+(224,224)).astype(np.float32)
 #img = np.transpose(img, [0,3,1,2])
 
 with tf.Session() as sess:
-    pred = sess.run("add_8:0", feed_dict={'actual_input_1:0':img})
+    pred = sess.run(output_node + ":0", feed_dict={'actual_input_1:0':img})
 
 print(pred)
 
