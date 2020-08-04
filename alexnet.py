@@ -4,8 +4,11 @@ import torchvision
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 
 img_size = (224, 224)
-dummy_input = torch.zeros((1, 3) + img_size)
+dummy_input = torch.zeros((10, 3) + img_size)
 model = torchvision.models.alexnet(pretrained=True).cpu()
+
+print(model)
+#exit()
 
 from torchvision import transforms
 transform = transforms.Compose([
@@ -43,12 +46,14 @@ output_names = ["output1"]
 print(input_names)
 print(output_names)
 
-torch.onnx.export(model, dummy_input, "./weights/alexnet.onnx", verbose=True, input_names=input_names, output_names=output_names,opset_version=10)
+torch.onnx.export(model, dummy_input, "./weights/alexnet.onnx", verbose=True, input_names=input_names, output_names=output_names,opset_version=11)
 
 print('---1---')
 
 import onnx
 model = onnx.load("./weights/alexnet.onnx")
+#model.ir_version = 3
+#print(model.ir_version)
 onnx.checker.check_model(model)
 onnx.helper.printable_graph(model.graph)
 
@@ -58,7 +63,7 @@ import onnxruntime as ort
 import numpy as np
 ort_session = ort.InferenceSession('./weights/alexnet.onnx')
 
-outputs = ort_session.run(None, {"actual_input_1":np.zeros((1,3)+(224,224)).astype(np.float32)})
+outputs = ort_session.run(None, {"actual_input_1":np.zeros((10,3)+(224,224)).astype(np.float32)})
 
 print(outputs[0])
 

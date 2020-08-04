@@ -26,7 +26,7 @@ tf.import_graph_def(
 
 #exit()
 
-img = np.zeros((1,3)+(224,224)).astype(np.float32)
+img = np.zeros((10,3)+(224,224)).astype(np.float32)
 #img = np.transpose(img, [0,3,1,2])
 
 with tf.Session() as sess:
