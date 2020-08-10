@@ -10,11 +10,11 @@ Tensorflow version:
 1.14.0
 
 ## Update
-AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
-ResNet18
-Squeezenet
-MobilenetV2 (Notice: Many conv2D issue, need to modify onnx-tf.)
-YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
+- AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
+- ResNet18
+- Squeezenet
+- MobilenetV2 (Notice: Many conv2D issue, need to modify onnx-tf.)
+- YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
 ## Introduction
 A Conversion tool to convert YOLO v3 Darknet weights to TF Lite model (YOLO v3 PyTorch > ONNX > TensorFlow > TF Lite), and to TensorRT model (dynamic_axes branch).
