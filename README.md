@@ -9,7 +9,9 @@ ONNX-TF version:
 Tensorflow version:
 1.14.0
 
-## Update
+ONNX-TF is modified based on following reason. (see Update)
+
+## Update (2020/08/10)
 - AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - ResNet18
 - Squeezenet
