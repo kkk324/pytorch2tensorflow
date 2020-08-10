@@ -1,13 +1,13 @@
 ## Now version
-Python version:
-3.7.3 (default, Mar 27 2019, 22:11:17) 
-[GCC 7.3.0]
-ONNX version:
-1.5.0
-ONNX-TF version:
-1.5.0
-Tensorflow version:
-1.14.0
+- Python version:
+- 3.7.3 (default, Mar 27 2019, 22:11:17) 
+- [GCC 7.3.0]
+- ONNX version:
+- 1.5.0
+- ONNX-TF version:
+- 1.5.0
+- Tensorflow version:
+- 1.14.0
 
 ONNX-TF is modified based on following reason. (see Update)
 
