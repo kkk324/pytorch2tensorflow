@@ -10,9 +10,9 @@ import cv2
 
 def detect(save_txt=False, save_img=False):
     # img_size = (320, 192) if ONNX_EXPORT else opt.img_size  # (320, 192) or (416, 256) or (608, 352) for (height, width)
-    # img_size = (416, 416)
+    img_size = (416, 416)
     print('ONNX_EXPORT', ONNX_EXPORT)
-    img_size = (opt.img_size, opt.img_size)
+    #img_size = (opt.img_size, opt.img_size)
     print(opt.model_type)
     if opt.model_type == 'yolov3':
         weights = 'weights/yolov3.weights'

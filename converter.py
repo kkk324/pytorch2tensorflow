@@ -8,7 +8,8 @@ from utils.utils import *
 
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 
-model_name = 'yolov3'
+model_name = 'mobilenet_v2'
+
 if model_name == 'yolov3':
     img_size = (416, 416)
 else:
@@ -18,6 +19,10 @@ dummy_input = torch.zeros((1, 3) + img_size)
 save_onnx = './weights/' + model_name + '.onnx'
 print(save_onnx)
 
+if model_name == 'yolov3':
+    img_size = (416, 416)
+else:
+    img_size = (214, 214)
 if model_name == 'resnet18':
         img_size = (224, 224)
         model = torchvision.models.resnet18(pretrained=True).cpu()
@@ -27,6 +32,9 @@ elif model_name == 'squeezenet':
 elif model_name == 'alexnet':
         img_size = (224, 224)
         model = torchvision.models.alexnet(pretrained=True).cpu()
+elif model_name == 'mobilenet_v2':
+        img_size = (224, 224)
+        model = torchvision.models.mobilenet_v2(pretrained=True).cpu()
 elif model_name == 'yolov3':
         weights = 'weights/yolov3.weights'
         cfg     = 'cfg/yolov3.cfg'
@@ -112,6 +120,7 @@ n = len(restored_graph_def.node)
 k = 0
 for node in restored_graph_def.node:
     #if 'output' in node.name.lower():
+    print(node.name, node.op)
     if k == n-1:
         output_node = node.name
         #print(node.name, node.op)

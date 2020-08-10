@@ -112,7 +112,7 @@ def detect(save_txt=False, save_img=False):
         img = np.transpose(img, [1, 2, 0])
         img = img[None, :, :, :]
         img = np.transpose(img, [0, 3, 1, 2])
-        pred = sess.run("concat_84:0", feed_dict={'input.1:0':img})
+        pred = sess.run("concat_84:0", feed_dict={'actual_input_1:0':img})
         pred = torch.Tensor(pred)
 
         if opt.half:
