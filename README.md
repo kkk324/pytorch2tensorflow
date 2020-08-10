@@ -9,7 +9,7 @@
 - Tensorflow version:
 - 1.14.0
 
-ONNX-TF is modified based on following reason. (see Update)
+ONNX-TF is modified based on following reason. (see Update or shot me in issue.)
 
 ## Update (2020/08/10)
 The following model are convert from PyTorch to TensorFlow pb successfully. (using converter.py and customized onnx-tf version )
