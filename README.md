@@ -12,6 +12,7 @@
 ONNX-TF is modified based on following reason. (see Update)
 
 ## Update (2020/08/10)
+The following model are convert from PyTorch to TensorFlow pb successfully. (using converter.py and customized onnx-tf version )
 - AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - ResNet18
 - Squeezenet
