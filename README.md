@@ -1,13 +1,9 @@
 ## Now version
-- Python version:
-- 3.7.3 (default, Mar 27 2019, 22:11:17) 
+- Python version: 3.7.3 (default, Mar 27 2019, 22:11:17) 
 - [GCC 7.3.0]
-- ONNX version:
-- 1.5.0
-- ONNX-TF version:
-- 1.5.0
-- Tensorflow version:
-- 1.14.0
+- ONNX version: 1.5.0
+- ONNX-TF version: 1.5.0
+- Tensorflow version: 1.14.0
 
 ONNX-TF is modified based on following reason. (see Update or shot me in issue.)
 
@@ -16,7 +12,7 @@ The following model are convert from PyTorch to TensorFlow pb successfully. (usi
 - AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - ResNet18
 - Squeezenet
-- MobilenetV2 (Notice: Many conv2D issue, need to modify onnx-tf.)
+- Mobilenet-V2 (Notice: Many conv2D issue, need to modify onnx-tf.)
 - YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
 ## Introduction
