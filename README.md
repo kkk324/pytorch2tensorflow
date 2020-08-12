@@ -12,7 +12,7 @@ The following model are convert from PyTorch to TensorFlow pb successfully. (usi
 - [x] AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - [x] ResNet18
 - [x] Squeezenet
-- [x] Mobilenet-V2 (Notice: Many conv2D issue, need to modify onnx-tf.)
+- [x] Mobilenet-V2 (Notice: A-Lots-Conv2Ds issue, need to modify onnx-tf.) (Max/Min node in pb issue, can be remove from pb.)
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
 ## Introduction
