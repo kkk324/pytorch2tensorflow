@@ -7,13 +7,15 @@
 
 ONNX-TF is modified based on following reason. (see Update or shot me in issue.)
 
-## Update (2020/08/13)
+## Update (2020/08/14)
 The following model are convert from PyTorch to TensorFlow pb successfully. (using converter.py and customized onnx-tf version )
 - [x] AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - [x] ResNet18
 - [x] Squeezenet
 - [x] Mobilenet-V2 (Notice: A-Lots-Conv2Ds issue, need to modify onnx-tf.) (Max/Min node in pb issue, can be remove from pb.)
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
+
+## Issues (2020/08/14)
 
 ## Introduction
 A Conversion tool to convert YOLO v3 Darknet weights to TF Lite model (YOLO v3 PyTorch > ONNX > TensorFlow > TF Lite), and to TensorRT model (dynamic_axes branch).
