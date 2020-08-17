@@ -59,21 +59,14 @@ def detect(save_txt=False, save_img=False):
     # model = Darknet(opt.cfg, img_size)
     
     if opt.model_type == 'yolov3':
-        ### model = Darknet(cfg, img_size)
-        model = Darknet_no_yolo_layer(cfg, img_size)
-        
+        model = Darknet(cfg, img_size)
+
         # Load weights
         attempt_download(weights)
         if weights.endswith('.pt'):  # pytorch format
             model.load_state_dict(torch.load(weights, map_location=device)['model'])
         else:  # darknet format
             _ = load_darknet_weights(model, weights)
-
-    #import torch
-    #torch.save(model.state_dict(), './yolov3.pth')
-    print('---Darknet_no_yolo_layer---')
-    #exit()
-
 
     # Second-stage classifier
     classify = False

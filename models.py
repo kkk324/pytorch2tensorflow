@@ -208,59 +208,6 @@ class YOLOLayer(nn.Module):
             res = torch.cat((xy, wh, p_conf, p_cls), -1)
             return res.view(bs, -1, 5 + self.nc), p.view(bs, self.na, self.ny, self.nx, self.nc + 5)
 
-class Darknet_no_yolo_layer(nn.Module):
-    # YOLOv3 object detection model
-
-    def __init__(self, cfg, img_size=(416, 416), arc='default'):
-        super(Darknet_no_yolo_layer, self).__init__()
-
-        self.module_defs = parse_model_cfg(cfg)
-        self.module_list, self.routs = create_modules(self.module_defs, img_size, arc)
-        self.yolo_layers = get_yolo_layers(self)
-
-        # Darknet Header https://github.com/AlexeyAB/darknet/issues/2914#issuecomment-496675346
-        self.version = np.array([0, 2, 5], dtype=np.int32)  # (int32) version info: major, minor, revision
-        self.seen = np.array([0], dtype=np.int64)  # (int64) number of images seen during training
-
-    def forward(self, x, var=None):
-        img_size = x.shape[-2:]
-        layer_outputs = []
-        output = []
-
-        for i, (mdef, module) in enumerate(zip(self.module_defs, self.module_list)):
-            mtype = mdef['type']
-            if mtype in ['convolutional', 'upsample', 'maxpool']:
-                x = module(x)
-            elif mtype == 'route':
-                layers = [int(x) for x in mdef['layers'].split(',')]
-                if len(layers) == 1:
-                    x = layer_outputs[layers[0]]
-                else:
-                    try:
-                        x = torch.cat([layer_outputs[i] for i in layers], 1)
-                    except:  # apply stride 2 for darknet reorg layer
-                        layer_outputs[layers[1]] = F.interpolate(layer_outputs[layers[1]], scale_factor=[0.5, 0.5])
-                        x = torch.cat([layer_outputs[i] for i in layers], 1)
-                    # print(''), [print(layer_outputs[i].shape) for i in layers], print(x.shape)
-            elif mtype == 'shortcut':
-                x = x + layer_outputs[int(mdef['from'])]
-            ### elif mtype == 'yolo':
-            ###     x = module(x, img_size)
-            ###     output.append(x)
-            layer_outputs.append(x if i in self.routs else [])
-
-        if self.training:
-            return output
-        else:
-            io, p = list(zip(*output))  # inference output, training output
-            # print("torch.cat(io, 1).shape", torch.cat(io, 1).shape)
-            # print(torch.cat(io, 1))
-            for _io in io:
-                print("_io.shape", _io.shape)
-            # print("p.shape", p.shape)
-            return torch.cat(io, 1), p
-
-
 
 class Darknet(nn.Module):
     # YOLOv3 object detection model
@@ -372,8 +319,6 @@ def load_darknet_weights(self, weights, cutoff=-1):
 
     ptr = 0
     for i, (mdef, module) in enumerate(zip(self.module_defs[:cutoff], self.module_list[:cutoff])):
-        print('mdef:', mdef)
-        print('module:', module)
         if mdef['type'] == 'convolutional':
             conv_layer = module[0]
             if mdef['batch_normalize']:

@@ -1,7 +1,7 @@
 import onnx 
 from onnx_tf.backend import prepare  
 path = './weights/'
-model_name = 'squeezenet'
+model_name = 'yolov3'
 
 
 onnx_path = path + model_name + '.onnx'
