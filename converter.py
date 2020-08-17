@@ -8,12 +8,12 @@ from utils.utils import *
 
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 
-model_name = 'mobilenet_v2'
+model_name = 'inception_v3'
 
 if model_name == 'yolov3':
     img_size = (416, 416)
 else:
-    img_size = (214, 214)
+    img_size = (224, 224)
 dummy_input = torch.zeros((1, 3) + img_size)
 
 save_onnx = './weights/' + model_name + '.onnx'
@@ -22,7 +22,7 @@ print(save_onnx)
 if model_name == 'yolov3':
     img_size = (416, 416)
 else:
-    img_size = (214, 214)
+    img_size = (224, 224)
 if model_name == 'resnet18':
         img_size = (224, 224)
         model = torchvision.models.resnet18(pretrained=True).cpu()
@@ -35,6 +35,9 @@ elif model_name == 'alexnet':
 elif model_name == 'mobilenet_v2':
         img_size = (224, 224)
         model = torchvision.models.mobilenet_v2(pretrained=True).cpu()
+elif model_name == 'inception_v3':
+        img_size = (224, 224)
+        model = torchvision.models.inception_v3(pretrained=True).cpu()
 elif model_name == 'yolov3':
         weights = 'weights/yolov3.weights'
         cfg     = 'cfg/yolov3.cfg'
@@ -71,7 +74,7 @@ if model_name == 'yolov3':
     outputs = ort_session.run(None, {"actual_input_1":np.zeros((1,3)+img_size).astype(np.float32)})
 else:
     ort_session = ort.InferenceSession(save_onnx)
-    img_size = (214, 214)
+    img_size = (224, 224)
     outputs = ort_session.run(None, {"actual_input_1":np.zeros((1,3)+img_size).astype(np.float32)})
 
 ### save output 
@@ -140,7 +143,7 @@ tf.import_graph_def(
 if model_name == 'yolov3':
     img_size = (416, 416)
 else:
-    img_size = (214, 214)
+    img_size = (224, 224)
 img = np.zeros((1,3)+img_size).astype(np.float32)
 #img = np.transpose(img, [0,3,1,2])
 
