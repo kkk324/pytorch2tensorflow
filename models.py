@@ -17,7 +17,7 @@ def create_modules(module_defs, img_size, arc):
 
     for i, mdef in enumerate(module_defs):
         modules = nn.Sequential()
-
+        
         if mdef['type'] == 'convolutional':
             bn = int(mdef['batch_normalize'])
             filters = int(mdef['filters'])
@@ -53,6 +53,7 @@ def create_modules(module_defs, img_size, arc):
             modules = nn.Upsample(scale_factor=int(mdef['stride']), mode='nearest')
 
         elif mdef['type'] == 'route':  # nn.Sequential() placeholder for 'route' layer
+            modules.add_module('Route', nn.Identity())
             layers = [int(x) for x in mdef['layers'].split(',')]
             filters = sum([output_filters[i + 1 if i > 0 else i] for i in layers])
             routs.extend([l if l > 0 else l + i for l in layers])
@@ -69,7 +70,7 @@ def create_modules(module_defs, img_size, arc):
             # torch.Size([16, 64, 208, 208]) <-- # stride 2 interpolate dimensions 2 and 3 to cat with prior layer
             pass
 
-        elif mdef['type'] == 'yolo':
+        elif mdef['type'] == 'no_yolo':#'yolo':
             yolo_index += 1
             mask = [int(x) for x in mdef['mask'].split(',')]  # anchor mask
             modules = YOLOLayer(anchors=mdef['anchors'][mask],  # anchor list
@@ -209,6 +210,14 @@ class YOLOLayer(nn.Module):
             return res.view(bs, -1, 5 + self.nc), p.view(bs, self.na, self.ny, self.nx, self.nc + 5)
 
 
+class Darknet_modified(nn.Module):
+	 def __init__(self, cfg, img_size=(416, 416), arc='default'):
+            super(Darknet_modified, self).__init__()
+            self.module_defs = parse_model_cfg(cfg)
+            self.module_list, self.routs = create_modules(self.module_defs, img_size, arc)
+            #print('Init Darknet_modified.')  
+            self.yolo_layers = get_yolo_layers(self)
+
 class Darknet(nn.Module):
     # YOLOv3 object detection model
 
@@ -216,9 +225,17 @@ class Darknet(nn.Module):
         super(Darknet, self).__init__()
 
         self.module_defs = parse_model_cfg(cfg)
+        
         self.module_list, self.routs = create_modules(self.module_defs, img_size, arc)
+        
         self.yolo_layers = get_yolo_layers(self)
-
+        #print(len(self.module_list))
+        #print((self.module_list))
+        #print(len(self.yolo_layers))
+        #print((self.yolo_layers))
+        #print(len(self.routs))
+        #print((self.routs))
+        
         # Darknet Header https://github.com/AlexeyAB/darknet/issues/2914#issuecomment-496675346
         self.version = np.array([0, 2, 5], dtype=np.int32)  # (int32) version info: major, minor, revision
         self.seen = np.array([0], dtype=np.int64)  # (int64) number of images seen during training
@@ -227,7 +244,7 @@ class Darknet(nn.Module):
         img_size = x.shape[-2:]
         layer_outputs = []
         output = []
-
+        print('forward, forward, forward')
         for i, (mdef, module) in enumerate(zip(self.module_defs, self.module_list)):
             mtype = mdef['type']
             if mtype in ['convolutional', 'upsample', 'maxpool']:
@@ -249,7 +266,7 @@ class Darknet(nn.Module):
                 x = module(x, img_size)
                 output.append(x)
             layer_outputs.append(x if i in self.routs else [])
-
+            
         if self.training:
             return output
         else:
@@ -299,6 +316,17 @@ def create_grids(self, img_size=416, ng=(13, 13), device='cpu', type=torch.float
     self.ny = ny
 
 
+def load_darknet_weights_no_yolo_layer(self, weights, cutoff=-1):
+    file = Path(weights).name
+    print(file)
+    
+    with open(weights, 'rb') as f:
+        # Read Header https://github.com/AlexeyAB/darknet/issues/2914#issuecomment-496675346
+        self.version = np.fromfile(f, dtype=np.int32, count=3)  # (int32) version info: major, minor, revision
+        self.seen = np.fromfile(f, dtype=np.int64, count=1)  # (int64) number of images seen during training
+
+        weights = np.fromfile(f, dtype=np.float32)  # the rest are weights
+
 def load_darknet_weights(self, weights, cutoff=-1):
     # Parses and loads the weights stored in 'weights'
 
@@ -316,9 +344,16 @@ def load_darknet_weights(self, weights, cutoff=-1):
         self.seen = np.fromfile(f, dtype=np.int64, count=1)  # (int64) number of images seen during training
 
         weights = np.fromfile(f, dtype=np.float32)  # the rest are weights
-
+    
     ptr = 0
-    for i, (mdef, module) in enumerate(zip(self.module_defs[:cutoff], self.module_list[:cutoff])):
+    print('---fuck---')
+    print(len(self.module_defs[:]))
+    print(len(self.module_list[:]))
+    print('len(weights):', len(weights))
+    print('---fuck---')
+    for i, (mdef, module) in enumerate(zip(self.module_defs[:], self.module_list[:])):
+        #print('i, mdef, module:', i , mdef, module)
+        
         if mdef['type'] == 'convolutional':
             conv_layer = module[0]
             if mdef['batch_normalize']:
@@ -349,10 +384,13 @@ def load_darknet_weights(self, weights, cutoff=-1):
                 ptr += num_b
             # Load conv. weights
             num_w = conv_layer.weight.numel()
+            #print('num_w:', num_w)
+            #print('ptr:', ptr)
+           
             conv_w = torch.from_numpy(weights[ptr:ptr + num_w]).view_as(conv_layer.weight)
             conv_layer.weight.data.copy_(conv_w)
             ptr += num_w
-
+    
     return cutoff
 
 
@@ -404,7 +442,7 @@ def convert(cfg='cfg/yolov3-spp.cfg', weights='weights/yolov3-spp.weights'):
                  'model': model.state_dict(),
                  'optimizer': None}
 
-        torch.save(chkpt, 'converted.pt')
+        torch.save(chkpt, 'weights/yolov3.pt')
         print("Success: converted '%s' to 'converted.pt'" % weights)
 
     else:
