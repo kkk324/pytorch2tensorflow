@@ -95,6 +95,7 @@ path = './weights/'
 
 onnx_path = path + model_name + '.onnx'
 print(onnx_path)
+
 onnx_model = onnx.load(onnx_path)  # load onnx model 
 # output = prepare(onnx_model).run(input)  # run the loaded model
 # no strict to be faster
