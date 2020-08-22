@@ -7,10 +7,11 @@ from utils.utils import *
 ### model name and where to save model
 
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
+############################
+model_name = 'shufflenet_v2_x1_0'
+###########################
 
-model_name = 'inception_v3'
-
-if model_name == 'yolov3':
+if model_name == '':
     img_size = (416, 416)
 else:
     img_size = (224, 224)
@@ -38,6 +39,12 @@ elif model_name == 'mobilenet_v2':
 elif model_name == 'inception_v3':
         img_size = (224, 224)
         model = torchvision.models.inception_v3(pretrained=True).cpu()
+elif model_name == 'densenet161':
+        img_size = (224, 224)
+        model = torchvision.models.densenet161(pretrained=True).cpu()
+elif model_name == 'shufflenet_v2_x1_0':
+        img_size = (224, 224)
+        model = torchvision.models.densenet161(pretrained=True).cpu()
 elif model_name == 'yolov3':
         weights = 'weights/yolov3.weights'
         cfg     = 'cfg/yolov3.cfg'
