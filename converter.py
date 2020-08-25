@@ -8,7 +8,7 @@ from utils.utils import *
 
 #dummy_input = torch.randn(10, 3, 224, 224, device='cpu')
 ############################
-model_name = 'shufflenet_v2_x1_0'
+model_name = 'densenet121'
 ###########################
 
 if model_name == '':
@@ -45,6 +45,9 @@ elif model_name == 'densenet161':
 elif model_name == 'shufflenet_v2_x1_0':
         img_size = (224, 224)
         model = torchvision.models.densenet161(pretrained=True).cpu()
+elif model_name == 'densenet121':
+        img_size = (224, 224)
+        model = torchvision.models.densenet121(pretrained=True).cpu()
 elif model_name == 'yolov3':
         weights = 'weights/yolov3.weights'
         cfg     = 'cfg/yolov3.cfg'

@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-graph_def = 'weights/resnet18.pb'
+graph_def = 'weights/densenet161.pb'
 
 with tf.gfile.GFile(graph_def, "rb") as f:
     restored_graph_def = tf.GraphDef()

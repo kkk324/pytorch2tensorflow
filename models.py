@@ -106,6 +106,7 @@ def create_modules(module_defs, img_size, arc):
                 print('WARNING: smart bias initialization failure.')
 
 
+
         else:
             print('Warning: Unrecognized Layer Type: ' + mdef['type'])
 
@@ -210,15 +211,6 @@ class YOLOLayer(nn.Module):
             res = torch.cat((xy, wh, p_conf, p_cls), -1)
             return res.view(bs, -1, 5 + self.nc), p.view(bs, self.na, self.ny, self.nx, self.nc + 5)
 
-
-class Darknet_modified(nn.Module):
-	 def __init__(self, cfg, img_size=(416, 416), arc='default'):
-            super(Darknet_modified, self).__init__()
-            self.module_defs = parse_model_cfg(cfg)
-            self.module_list, self.routs = create_modules(self.module_defs, img_size, arc)
-            #print('Init Darknet_modified.')  
-            self.yolo_layers = get_yolo_layers(self)
-
 class Darknet(nn.Module):
     # YOLOv3 object detection model
 
@@ -226,9 +218,7 @@ class Darknet(nn.Module):
         super(Darknet, self).__init__()
 
         self.module_defs = parse_model_cfg(cfg)
-        
         self.module_list, self.routs = create_modules(self.module_defs, img_size, arc)
-        #print('module_list', self.module_list)         
         self.yolo_layers = get_yolo_layers(self)
         #print(len(self.module_list))
         #print((self.module_list))
@@ -247,29 +237,45 @@ class Darknet(nn.Module):
         layer_outputs = []
         output = []
         print('forward, forward, forward')
+         
+        #for i, (mdef, module) in enumerate(zip(self.module_defs, self.module_list)):
+        #    mtype = mdef['type']
+        #    #print(i, (mdef, module))
+        #    print(mdef['layers'])
+
+        #exit()
+
         for i, (mdef, module) in enumerate(zip(self.module_defs, self.module_list)):
             mtype = mdef['type']
+            print('No', i)
             if mtype in ['convolutional', 'upsample', 'maxpool']:
                 x = module(x)
-                print('conv, upsample, maxpool: x.data.shape:', x.data.shape)
+                print(module)
+                print('--- conv, upsample, maxpool--- : x.data.shape:', x.data.shape)
             elif mtype == 'route':
+                print('---route---')
                 layers = [int(x) for x in mdef['layers'].split(',')]
+                print(layers)
                 if len(layers) == 1:
+                    print('layers[0]',layers[0])
                     x = layer_outputs[layers[0]]
+                    print(''), [print(layer_outputs[i].shape) for i in layers], print(x.shape)
                 else:
                     try:
                         x = torch.cat([layer_outputs[i] for i in layers], 1)
-                        print('route, x.data.shape:', x.data.shape)
+                        #print('route, x.data.shape:', x.data.shape)
                     except:  # apply stride 2 for darknet reorg layer
                         layer_outputs[layers[1]] = F.interpolate(layer_outputs[layers[1]], scale_factor=[0.5, 0.5])
                         x = torch.cat([layer_outputs[i] for i in layers], 1)
                     print(''), [print(layer_outputs[i].shape) for i in layers], print(x.shape)
+                print('*** end ***')   
             elif mtype == 'shortcut':
+                print('--- shortcut ---')
                 x = x + layer_outputs[int(mdef['from'])]
-                print('shortcut, x.data.shape:', x.data.shape)
+                #print('shortcut, x.data.shape:', x.data.shape)
             elif mtype == 'yolo':
-                print('inside yolo')
                 x = module(x, img_size)
+                print('yolo layer:', type(x))
                 output.append(x)
                 # list print('output.data.shape:', output.data.shape)
             layer_outputs.append(x if i in self.routs else [])
@@ -277,12 +283,11 @@ class Darknet(nn.Module):
         if self.training:
             return output
         else:
-            print('Here!!!!!!!!!!')
-            print('type(output)', type(output))
-            print('output:', len(output))
-            print('output 0 len', len(output[0]))
-            print('output 1 len', len(output[1]))
-            print('output 2 len', len(output[2]))
+            #print('totoal output', output)
+            #print('output:', len(output))
+            #print('output 0 len', len(output[0]))
+            #print('output 1 len', len(output[1]))
+            #print('output 2 len', len(output[2]))
             io, p = list(zip(*output))  # inference output, training output
             #io = output
             # print("torch.cat(io, 1).shape", torch.cat(io, 1).shape)
@@ -290,7 +295,6 @@ class Darknet(nn.Module):
             for _io in io:
                 print("_io.shape", _io.shape)
             #print("p.shape", p.shape)
-            exit()
             return torch.cat(io, 1), p
 
     def fuse(self):
