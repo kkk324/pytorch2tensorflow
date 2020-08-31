@@ -109,7 +109,7 @@ print(onnx_path)
 onnx_model = onnx.load(onnx_path)  # load onnx model 
 # output = prepare(onnx_model).run(input)  # run the loaded model
 # no strict to be faster
-output = prepare(onnx_model, strict=True)
+output = prepare(onnx_model, strict=False)
 
 pb_path = path + model_name + '.pb'
 print(pb_path)
