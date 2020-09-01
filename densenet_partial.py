@@ -143,7 +143,7 @@ class DenseNet_part(nn.Module):
         # First convolution
         
         
-        self.features = nn.Identity(num_init_features)
+        self.features = nn.Sequential(nn.Identity(num_init_features))
         #self.features = nn.Sequential(OrderedDict([
         #    ('conv0', nn.Conv2d(3, num_init_features, kernel_size=7, stride=2,
         #                        padding=3, bias=False)),
