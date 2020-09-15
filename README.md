@@ -7,11 +7,7 @@
 
 ONNX-TF is modified based on following reason. (see Update or shot me in issue.)
 
-<<<<<<< HEAD
-## Update (2020/09/14)
-=======
-## Update (2020/09/08)
->>>>>>> 19dcdef83d5e5cba653fdac7d3a47779053af432
+## Update (2020/09/15)
 The following model are convert from PyTorch to TensorFlow pb successfully. (using converter.py and customized onnx-tf version )
 - [x] AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - [x] ResNet18
@@ -23,14 +19,11 @@ The following model are convert from PyTorch to TensorFlow pb successfully. (usi
 - [x] Densenet_121 partial 
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
-## Issues (2020/09/14)
-=======
+## Issues (2020/09/15)
 - [x] Googlenet
 - [ ] Densenet_121 partial 
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
-## Issues (2020/09/08)
->>>>>>> 19dcdef83d5e5cba653fdac7d3a47779053af432
 
 ## Introduction
 A Conversion tool to convert YOLO v3 Darknet weights to TF Lite model (YOLO v3 PyTorch > ONNX > TensorFlow > TF Lite), and to TensorRT model (dynamic_axes branch).
