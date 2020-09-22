@@ -7,7 +7,7 @@
 
 ONNX-TF is modified based on following reason. (see Update or shot me in issue.)
 
-## Update (2020/09/22)
+## Update (2020/09/23)
 The following model are convert from PyTorch to TensorFlow pb successfully. (using converter.py and customized onnx-tf version )
 - [x] AlexNet (Notice: Dilation2D issue, need to modify onnx-tf.)
 - [x] ResNet18
@@ -18,7 +18,7 @@ The following model are convert from PyTorch to TensorFlow pb successfully. (usi
 - [x] Densenet_121 partial 
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
 
-## Issues (2020/09/22)
+## Issues (2020/09/23)
 - [x] Googlenet
 - [ ] Densenet_121 partial 
 - [ ] YOLOv3 (Notice: YOLO layer issue, dont know how to solve it now.)
